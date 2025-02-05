@@ -3,26 +3,25 @@ import pickle
 import string
 import nltk
 import os
-import shutil
 from nltk.stem.porter import PorterStemmer
 from nltk.corpus import stopwords
 
+# Set NLTK data directory
 nltk_data_path = os.path.join(os.getcwd(), "nltk_data")
-if os.path.exists(nltk_data_path):
-    shutil.rmtree(nltk_data_path)  # Deletes the folder to avoid old corrupted files
+if not os.path.exists(nltk_data_path):  # Create directory if it doesn't exist
+    os.makedirs(nltk_data_path, exist_ok=True)
+nltk.data.path.append(nltk_data_path)  # Ensure Streamlit finds nltk data
 
-os.makedirs(nltk_data_path, exist_ok=True)
-nltk.data.path.append(nltk_data_path)
-
+# Download necessary NLTK resources
 nltk.download('punkt', download_dir=nltk_data_path)
 nltk.download('stopwords', download_dir=nltk_data_path)
 nltk.download('wordnet', download_dir=nltk_data_path)
 
+# Ensure correct tokenizer is found
 try:
     nltk.data.find('tokenizers/punkt')
 except LookupError:
     nltk.download('punkt', download_dir=nltk_data_path)
-
 
 ps = PorterStemmer()
 
@@ -51,9 +50,17 @@ def transform_text(text):
 
     return " ".join(y)
 
-tfidf = pickle.load(open('vectorizer.pkl','rb'))
-model = pickle.load(open('model.pkl','rb'))
 
+vectorizer_path = os.path.join(os.getcwd(), 'vectorizer.pkl')
+model_path = os.path.join(os.getcwd(), 'model.pkl')
+
+try:
+    tfidf = pickle.load(open(vectorizer_path, 'rb'))
+    model = pickle.load(open(model_path, 'rb'))
+except Exception as e:
+    st.error(f"Error loading model files: {e}")
+    st.stop()
+    
 st.title("SMS Spam Classifier")
 
 input_sms = st.text_area("Enter the message")
@@ -68,6 +75,6 @@ if st.button('Predict'):
     result = model.predict(vector_input)[0]
     # 4. Display
     if result == 1:
-        st.header("Spam")
+        st.header("🚨 Spam 🚨")
     else:
-        st.header("Not Spam")
+        st.header("✅ Not Spam ✅")
