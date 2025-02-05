@@ -8,20 +8,23 @@ from nltk.corpus import stopwords
 
 # Set NLTK data directory
 nltk_data_path = os.path.join(os.getcwd(), "nltk_data")
-if not os.path.exists(nltk_data_path):  # Create directory if it doesn't exist
-    os.makedirs(nltk_data_path, exist_ok=True)
+os.makedirs(nltk_data_path, exist_ok=True)
 nltk.data.path.append(nltk_data_path)  # Ensure Streamlit finds nltk data
 
-# Download necessary NLTK resources
-nltk.download('punkt', download_dir=nltk_data_path)
-nltk.download('stopwords', download_dir=nltk_data_path)
-nltk.download('wordnet', download_dir=nltk_data_path)
+if not os.path.exists(os.path.join(nltk_data_path, "tokenizers/punkt")):
+    nltk.download("punkt", download_dir=nltk_data_path)
 
-# Ensure correct tokenizer is found
+nltk.data.path.insert(0, nltk_data_path)
+
 try:
     nltk.data.find('tokenizers/punkt')
 except LookupError:
     nltk.download('punkt', download_dir=nltk_data_path)
+    
+# Download necessary NLTK resources
+nltk.download('stopwords', download_dir=nltk_data_path)
+nltk.download('wordnet', download_dir=nltk_data_path)
+
 
 ps = PorterStemmer()
 
