@@ -1,7 +1,6 @@
 import streamlit as st
 import pickle
 import string
-import os
 import nltk
 import os
 from nltk.stem.porter import PorterStemmer
