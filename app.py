@@ -6,12 +6,22 @@ import os
 from nltk.stem.porter import PorterStemmer
 from nltk.corpus import stopwords
 
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
+# Set a fixed nltk_data path
+nltk_data_path = os.path.join(os.getcwd(), "nltk_data")
+os.makedirs(nltk_data_path, exist_ok=True)  # Create directory if it doesn't exist
+nltk.data.path.append(nltk_data_path)  # Add path to nltk
 
-# Force NLTK to recognize the tokenizer
-nltk.data.find('tokenizers/punkt')
+# Ensure necessary NLTK resources are downloaded at runtime
+nltk.download('punkt', download_dir=nltk_data_path)
+nltk.download('stopwords', download_dir=nltk_data_path)
+nltk.download('wordnet', download_dir=nltk_data_path)
+
+# Force NLTK to load the correct tokenizer
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt', download_dir=nltk_data_path)
+
 
 ps = PorterStemmer()
 
